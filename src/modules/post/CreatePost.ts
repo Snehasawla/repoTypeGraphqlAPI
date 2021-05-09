@@ -5,10 +5,12 @@ import {
     ClassType,
     InputType,
     Field,
+    Ctx
    // UseMiddleware
   } from "type-graphql";
   import { PostInput } from "./postInput";
   import { Post } from "../../entity/Post";
+import { MyContext } from "../types/MyContext";
   //import { Middleware } from "type-graphql/interfaces/Middleware";
   
   function createResolver<T extends ClassType, X extends ClassType>(
@@ -22,7 +24,11 @@ import {
     class BaseResolver {
       @Mutation(() => returnType, { name: `create${suffix}` })
      // @UseMiddleware(...(middleware || []))
-      async create(@Arg("data", () => inputType) data: any) {
+      async create(@Arg("data", () => inputType) data: any,
+      @Ctx() ctx: MyContext){
+          if(!ctx.req.session.userId){
+              return null;
+          }
         return entity.create(data).save();
       }
     }
