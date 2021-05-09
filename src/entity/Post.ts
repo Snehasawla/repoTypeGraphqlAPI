@@ -1,6 +1,7 @@
 import { Field, ObjectType } from "type-graphql";
-import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToOne, JoinColumn} from "typeorm";
-import { UserPost } from "./UserPost";
+import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToOne} from "typeorm";
+import { User } from "./User";
+
 
 @ObjectType()
 @Entity()
@@ -18,8 +19,7 @@ export class Post extends BaseEntity{
     @Column()
     body: string;
 
-    @ManyToOne(() => UserPost, ab => ab.post)
-    @JoinColumn({ name: "id"})
-    userconnection: Promise<UserPost[]>;
+    @ManyToOne(() => User, user => user.posts)
+    user: User;
 
 }

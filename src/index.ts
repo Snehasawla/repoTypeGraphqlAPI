@@ -8,6 +8,7 @@ import { createConnection } from "typeorm";
 import { redis } from "./redis";
 
 import { createSchema } from "./utils/createSchema";
+import { sendEmail } from "./utils/sendEmail";
 
 const main = async () => {
   await createConnection();
@@ -79,6 +80,8 @@ const main = async () => {
   app.listen(4000, () => {
     console.log("server started on http://localhost:4000/graphql");
   });
+
+  await sendEmail();
 };
 
 main();

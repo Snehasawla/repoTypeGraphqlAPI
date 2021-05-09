@@ -1,43 +1,55 @@
-import { Post } from "../../entity/Post";
-import { UserPost } from "../../entity/UserPost";
-import { Arg, Int, Mutation, Query, Resolver } from "type-graphql";
-
-
-
-@Resolver()
-export class CreatePostResolver {
-    @Mutation(() => Post)
-    async createPost(
-        @Arg("title") title: string,
-        @Arg("body") body: string
-    ){
-        return Post.create({title, body}).save();
+import {
+    Resolver,
+    Mutation,
+    Arg,
+    ClassType,
+    InputType,
+    Field,
+   // UseMiddleware
+  } from "type-graphql";
+  import { PostInput } from "./postInput";
+  import { Post } from "../../entity/Post";
+  //import { Middleware } from "type-graphql/interfaces/Middleware";
+  
+  function createResolver<T extends ClassType, X extends ClassType>(
+    suffix: string,
+    returnType: T,
+    inputType: X,
+    entity: any,
+    //middleware?: Middleware<any>[]
+  ) {
+    @Resolver()
+    class BaseResolver {
+      @Mutation(() => returnType, { name: `create${suffix}` })
+     // @UseMiddleware(...(middleware || []))
+      async create(@Arg("data", () => inputType) data: any) {
+        return entity.create(data).save();
+      }
     }
+  
+    return BaseResolver;
+  }
+  
+  @InputType()
+  class UpdatePostInput {
+    @Field()
+    title: string;
 
-    @Mutation(() => Boolean)
-    async addUserPost(
-        @Arg("userid", () => Int) userId: number,
-        @Arg("postId", () => Int) postId: number)
-        {
-            await UserPost.create({ userId, postId}).save();
-            return true;
-        }
-         
-
-        @Mutation(() => Boolean)
-        async deletePost(@Arg("postId", () => Int) postId: number){
-               await UserPost.delete({ postId});
-               await Post.delete({id: postId });
-               return true;
-        }
+    @Field()
+    body: string;
+  } 
+  
+  export const CreatePostResolver = createResolver(
+    "Post",
+    Post,
+    PostInput,
+    Post
+  );
 
 
-    @Query(() => [Post])
-    async posts(){
-        return Post.find();
-    }
-        
-    
-
-    
-}
+  export const UpdatePostResolver = createResolver(
+    "UpdatePost",
+    Post,
+    UpdatePostInput,
+    Post
+   );
