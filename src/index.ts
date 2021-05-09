@@ -6,6 +6,7 @@ import session from "express-session";
 import "reflect-metadata";
 import { createConnection } from "typeorm";
 import { redis } from "./redis";
+//import queryComplexity from "graphql-query-complexity";
 
 import { createSchema } from "./utils/createSchema";
 import { sendEmail } from "./utils/sendEmail";
